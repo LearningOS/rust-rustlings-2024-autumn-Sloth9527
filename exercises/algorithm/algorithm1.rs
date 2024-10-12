@@ -2,13 +2,13 @@
 	single linked list merge
 	This problem requires you to merge two ordered singly linked lists into one ordered singly linked list
 */
-// I AM NOT DONE
+
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
 use std::vec::*;
 
-#[derive(Debug)]
+#[derive(Debug, PartialEq, Clone)]
 struct Node<T> {
     val: T,
     next: Option<NonNull<Node<T>>>,
@@ -29,13 +29,13 @@ struct LinkedList<T> {
     end: Option<NonNull<Node<T>>>,
 }
 
-impl<T> Default for LinkedList<T> {
+impl<T> Default for LinkedList<T> where T: PartialOrd + Clone {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<T> LinkedList<T> {
+impl<T> LinkedList<T> where T: PartialOrd + Clone {
     pub fn new() -> Self {
         Self {
             length: 0,
@@ -69,14 +69,46 @@ impl<T> LinkedList<T> {
             },
         }
     }
-	pub fn merge(list_a:LinkedList<T>,list_b:LinkedList<T>) -> Self
+	pub fn merge(mut list_a:LinkedList<T>,mut list_b:LinkedList<T>) -> Self
 	{
 		//TODO
-		Self {
+		let mut header = Self {
             length: 0,
             start: None,
             end: None,
+        };
+
+        let a_len = list_a.length as i32;
+        let b_len = list_b.length as i32;
+
+        let mut pointer_a: i32 = 0;
+        let mut pointer_b: i32 = 0;
+
+        while pointer_a < a_len || pointer_b < b_len {
+            if pointer_a < a_len && pointer_b < b_len {
+                let a_val = list_a.get(pointer_a).unwrap().clone();
+                let b_val = list_b.get(pointer_b).unwrap().clone();
+
+                if a_val < b_val {
+                    header.add(a_val);
+                    pointer_a += 1;
+                } else {
+                    header.add(b_val);
+                    pointer_b += 1;
+                }
+            } else if pointer_a < a_len {
+                let a_val = list_a.get(pointer_a).unwrap().clone();
+                header.add(a_val);
+                pointer_a += 1;
+            } else {
+                let b_val = list_b.get(pointer_b).unwrap().clone();
+                header.add(b_val);
+                pointer_b += 1;
+            }
         }
+        
+        
+        header
 	}
 }
 
