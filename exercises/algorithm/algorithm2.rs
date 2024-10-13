@@ -2,11 +2,12 @@
 	double linked list reverse
 	This problem requires you to reverse a doubly linked list
 */
-// I AM NOT DONE
+
 
 use std::fmt::{self, Display, Formatter};
 use std::ptr::NonNull;
 use std::vec::*;
+use std::mem::swap;
 
 #[derive(Debug)]
 struct Node<T> {
@@ -31,13 +32,13 @@ struct LinkedList<T> {
     end: Option<NonNull<Node<T>>>,
 }
 
-impl<T> Default for LinkedList<T> {
+impl<T> Default for LinkedList<T> where T: Display {
     fn default() -> Self {
         Self::new()
     }
 }
 
-impl<T> LinkedList<T> {
+impl<T> LinkedList<T> where T: Display {
     pub fn new() -> Self {
         Self {
             length: 0,
@@ -74,6 +75,32 @@ impl<T> LinkedList<T> {
     }
 	pub fn reverse(&mut self){
 		// TODO
+        if self.start.is_none() || self.end.is_none() { return; }
+
+        let mut pointer_start = unsafe { self.start.unwrap().as_mut() };
+        let mut pointer_end = unsafe { self.end.unwrap().as_mut() };
+
+        let mut pointer_start_idx = 0;
+        let mut pointer_end_idx = (self.length as i32) - 1;
+
+
+        while pointer_start_idx < pointer_end_idx {
+            swap( &mut pointer_start.val, &mut pointer_end.val);
+
+            pointer_start = match pointer_start.next {
+                Some(mut node) => { unsafe { node.as_mut() } },
+                None => { break; },
+            };
+
+            pointer_end = match pointer_end.prev {
+                Some(mut node) => { unsafe { node.as_mut() } },
+                None => { break; },
+            };
+
+            pointer_start_idx += 1;
+            pointer_end_idx -= 1;
+        }
+
 	}
 }
 
