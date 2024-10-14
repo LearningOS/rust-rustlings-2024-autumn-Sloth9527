@@ -3,8 +3,9 @@
 	This problem requires you to implement a basic BFS algorithm
 */
 
-//I AM NOT DONE
+
 use std::collections::VecDeque;
+use std::collections::HashMap;
 
 // Define a graph
 struct Graph {
@@ -31,6 +32,35 @@ impl Graph {
 		//TODO
 
         let mut visit_order = vec![];
+
+        let mut inserted_map = HashMap::new();
+
+        inserted_map.insert(start, true);
+        visit_order.push(start);
+
+        let mut childs = self.adj[start]
+            .iter()
+            .filter(|x| { !inserted_map.contains_key(x) })
+            .map(|x| { x.clone() })
+            .collect::<Vec<usize>>();
+
+        while childs.len() > 0 {
+            let mut next_childs: Vec<usize> = vec![];
+            for child in childs {
+                if !inserted_map.contains_key(&child) {
+                    inserted_map.insert(child.clone(), true);
+                    visit_order.push(child.clone());
+                    next_childs.append(&mut self.adj[child].clone());
+                }
+            }
+
+            childs = next_childs
+                .iter()
+                .filter(|x| { !inserted_map.contains_key(x) })
+                .map(|x| { x.clone() })
+                .collect::<Vec<usize>>();
+        }
+
         visit_order
     }
 }
